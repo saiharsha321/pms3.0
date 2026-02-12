@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Verify OTP - PMS{% endblock %}
+
+{% block auth_content %}
+<div class="container-fluid" style="min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="row justify-content-center align-items-center h-100" style="min-height: 100vh;">
+        <div class="col-md-5 col-lg-4">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="font-weight-bold text-dark mb-4">Email Verification</h3>
+                    <p class="text-muted mb-4">
+                        We've sent a 6-digit verification code to<br>
+                        <strong>{{ email }}</strong>
+                    </p>
+
+                    <form method="POST">
+                        <div class="form-group mb-4">
+                            <label class="form-label text-start w-100 fw-bold text-secondary small">ENTER OTP
+                                CODE</label>
+                            <input type="text" class="form-control form-control-lg text-center fw-bold letter-spacing-2"
+                                name="otp" placeholder="000000" maxlength="6" required
+                                style="font-size: 1.5rem; letter-spacing: 5px; border: 2px solid #e1e5ea; height: 60px;">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                Verify Account <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4">
+                        <p class="small text-muted mb-0">
+                            Didn't receive the code? <br>
+                            <span class="text-muted">Check your Spam folder or contact Admin.</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer text-center py-3 bg-light border-0 rounded-bottom">
+                    <a href="{{ url_for('login') }}" class="text-decoration-none small text-muted">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

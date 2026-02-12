@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Apply Permission - PMS{% endblock %}
+{% block page_title %}Apply for Permission{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">New Permission Request</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Permission Date *</label>
+                            <input type="date" class="form-control" name="date" required 
+                                   min="{{ today_str }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Club *</label>
+                            <select class="form-select" id="clubSelect" name="club_id" required>
+                                <option value="">Select Club</option>
+                                {% for club in clubs %}
+                                <option value="{{ club.id }}">{{ club.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Event *</label>
+                        <select class="form-select" id="eventSelect" name="event_id">
+                            <option value="">Select Event</option>
+                            <!-- Events will be loaded dynamically -->
+                        </select>
+                        <div class="form-text">Or enter custom event name below if not listed</div>
+                    </div>
+
+                    <div class="mb-3" id="customEventSection" style="display: none;">
+                        <label class="form-label">Custom Event Name</label>
+                        <input type="text" class="form-control" id="customEvent" name="custom_event" 
+                               placeholder="Enter event name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description *</label>
+                        <textarea class="form-control" name="description" rows="4" 
+                                  placeholder="Describe the purpose of your permission..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Proof Document (Optional)</label>
+                        <input type="file" class="form-control" name="proof_file" 
+                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <div class="form-text">Supported formats: PDF, DOC, DOCX, JPG, PNG (Max 16MB)</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Submit Permission Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Load events when club is selected
+    $('#clubSelect').change(function() {
+        var clubId = $(this).val();
+        if (clubId) {
+            $.get('/api/events/' + clubId, function(data) {
+                $('#eventSelect').empty();
+                $('#eventSelect').append('<option value="">Select Event</option>');
+                if (data.length > 0) {
+                    $.each(data, function(index, event) {
+                        $('#eventSelect').append('<option value="' + event.id + '">' + event.name + '</option>');
+                    });
+                    $('#customEventSection').hide();
+                } else {
+                    $('#eventSelect').append('<option value="">No events found</option>');
+                    $('#customEventSection').show();
+                }
+            });
+        } else {
+            $('#eventSelect').empty().append('<option value="">Select Event</option>');
+            $('#customEventSection').hide();
+        }
+    });
+
+    // Show custom event field when "Others" is selected or no events
+    $('#eventSelect').change(function() {
+        if ($(this).val() === '') {
+            $('#customEventSection').show();
+        } else {
+            $('#customEventSection').hide();
+        }
+    });
+
+    // JavaScript fallback for date min attribute
+    var today = new Date().toISOString().split('T')[0];
+    $('input[type="date"]').attr('min', today);
+});
+</script>
+{% endblock %}

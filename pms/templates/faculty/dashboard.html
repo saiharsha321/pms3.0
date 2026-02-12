@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Faculty Dashboard - PMS{% endblock %}
+{% block page_title %}Faculty Dashboard{% endblock %}
+
+{% block content %}
+{% if is_hod or is_incharge %}
+<!-- Pending Permissions for HOD & Class Incharge -->
+<div class="card shadow mb-4" id="pending-permissions">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-warning">
+            Pending Permissions -
+            {% if is_hod %}
+            {{ current_user.department }} Department
+            {% else %}
+            Class Incharge ({{ current_user.incharge_department }} - {{ current_user.incharge_section }})
+            {% endif %}
+        </h6>
+    </div>
+    <div class="card-body">
+        {% if pending_grouped %}
+        <div class="accordion" id="accordionPending">
+            {% for date, sections in pending_grouped.items() %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ loop.index }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse{{ loop.index }}">
+                        Date: {{ date }}
+                    </button>
+                </h2>
+                <div id="collapse{{ loop.index }}" class="accordion-collapse collapse"
+                    data-bs-parent="#accordionPending">
+                    <div class="accordion-body">
+                        {% for section, permissions in sections.items() %}
+                        <div class="card mb-3 border-danger">
+                            <div class="card-header bg-danger text-white py-1">
+                                Section: {{ section }}
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Applied</th>
+                                                <th>Club/Event</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for permission in permissions %}
+                                            <tr>
+                                                <td>
+                                                    <div><strong>{{ permission.student.get_full_name() }}</strong></div>
+                                                    <small class="text-muted">{{ permission.student.roll_no }}</small>
+                                                </td>
+                                                <td>{{ permission.applied_at.strftime('%H:%M') }}</td>
+                                                <td>
+                                                    <div>{{ permission.club.name }}</div>
+                                                    <small>{{ permission.event.name if permission.event else
+                                                        permission.custom_event }}</small>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ url_for('view_permission', permission_id=permission.id) }}"
+                                                            class="btn btn-info" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('update_permission_status', permission_id=permission.id, action='approve') }}"
+                                                            class="btn btn-success" title="Approve">
+                                                            <i class="fas fa-check"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('update_permission_status', permission_id=permission.id, action='reject') }}"
+                                                            class="btn btn-danger" title="Reject">
+                                                            <i class="fas fa-times"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted py-4">No pending permissions requiring your approval.</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Approved Permissions -->
+<div class="card shadow mb-4" id="approved-permissions">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-success">
+            {% if is_hod or is_incharge %}Approved Permissions{% else %}Student Permissions ({{ current_user.department
+            }}){% endif %}
+        </h6>
+    </div>
+    <div class="card-body">
+        {% if approved_grouped %}
+        <div class="accordion" id="accordionApproved">
+            {% for date, sections in approved_grouped.items() %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingApp{{ loop.index }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseApp{{ loop.index }}">
+                        Date: {{ date }}
+                    </button>
+                </h2>
+                <div id="collapseApp{{ loop.index }}" class="accordion-collapse collapse"
+                    data-bs-parent="#accordionApproved">
+                    <div class="accordion-body">
+                        {% for section, permissions in sections.items() %}
+                        <div class="card mb-3 border-success">
+                            <div class="card-header bg-success text-white py-1">
+                                Section: {{ section }}
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Club/Event</th>
+                                                <th>Status</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for permission in permissions %}
+                                            <tr>
+                                                <td>
+                                                    <div><strong>{{ permission.student.get_full_name() }}</strong></div>
+                                                    <small class="text-muted">{{ permission.student.roll_no }}</small>
+                                                </td>
+                                                <td>
+                                                    <div>{{ permission.club.name }}</div>
+                                                    <small>{{ permission.event.name if permission.event else
+                                                        permission.custom_event }}</small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-success">APPROVED</span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ url_for('view_permission', permission_id=permission.id) }}"
+                                                        class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    {% if is_hod or is_incharge %}
+                                                    <a href="{{ url_for('update_permission_status', permission_id=permission.id, action='reject') }}"
+                                                        class="btn btn-warning btn-sm" title="Revoke">
+                                                        <i class="fas fa-undo"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted py-4">No approved permissions found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PMS - Permission Management System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link {
+            color: #fff;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .navbar-toggler {
+            border: none;
+            font-size: 1.25rem;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                z-index: 999;
+                overflow-y: auto;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .sidebar-backdrop {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+            }
+
+            .sidebar-backdrop.show {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% if current_user.is_authenticated %}
+    <!-- Mobile Header -->
+    <nav class="navbar navbar-dark bg-dark d-md-none">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="navbar-brand mb-0 h6">
+                <i class="fas fa-tasks me-2"></i>PMS
+            </span>
+            <div class="dropdown">
+                <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="mobileUserDropdown"
+                    data-bs-toggle="dropdown">
+                    <i class="fas fa-user me-1"></i>{{ current_user.first_name }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{{ url_for('edit_profile') }}">
+                            <i class="fas fa-user-edit me-2"></i>Edit Profile
+                        </a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Backdrop for Mobile -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="text-center text-white mb-4 d-none d-md-block">
+                        <h4><i class="fas fa-tasks me-2"></i>PMS</h4>
+                        <small>Permission Management System</small>
+                    </div>
+
+                    <!-- User Profile Section -->
+                    <div class="text-center text-white mb-4 p-3 bg-dark bg-opacity-25 rounded">
+                        <div class="mb-2">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </div>
+                        <h6 class="mb-1">{{ current_user.get_full_name() }}</h6>
+                        <small class="text-light">{{ current_user.role|title }}</small>
+                        <div class="mt-2">
+                            <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-edit me-1"></i>Edit Profile
+                            </a>
+                        </div>
+                    </div>
+
+                    <ul class="nav flex-column">
+                        {% if current_user.is_admin() %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
+                                href="{{ url_for('admin_dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manage_students' %}active{% endif %}"
+                                href="{{ url_for('manage_students') }}">
+                                <i class="fas fa-users me-2"></i>Manage Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manage_faculty' %}active{% endif %}"
+                                href="{{ url_for('manage_faculty') }}">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>Manage Faculty
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manage_clubs' %}active{% endif %}"
+                                href="{{ url_for('manage_clubs') }}">
+                                <i class="fas fa-star me-2"></i>Manage Clubs & Events
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'admin_permissions' %}active{% endif %}"
+                                href="{{ url_for('admin_permissions') }}">
+                                <i class="fas fa-clipboard-list me-2"></i>All Permissions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'admin_settings' %}active{% endif %}"
+                                href="{{ url_for('admin_settings') }}">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </a>
+                        </li>
+                        {% elif current_user.is_faculty() %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'faculty_dashboard' %}active{% endif %}"
+                                href="{{ url_for('faculty_dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        {% if current_user.is_hod() %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('faculty_dashboard') }}">
+                                <i class="fas fa-clock me-2"></i>Pending Permissions
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('faculty_dashboard') }}">
+                                <i class="fas fa-check-circle me-2"></i>Approved Permissions
+                            </a>
+                        </li>
+                        {% elif current_user.is_student() %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %}"
+                                href="{{ url_for('student_dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'apply_permission' %}active{% endif %}"
+                                href="{{ url_for('apply_permission') }}">
+                                <i class="fas fa-plus-circle me-2"></i>Apply Permission
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'student_permissions' %}active{% endif %}"
+                                href="{{ url_for('student_permissions') }}">
+                                <i class="fas fa-history me-2"></i>My Permissions
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Desktop Header -->
+                <div
+                    class="d-none d-md-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">{% block page_title %}Dashboard{% endblock %}</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown"
+                                data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ current_user.get_full_name() }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ url_for('edit_profile') }}">
+                                        <i class="fas fa-user-edit me-2"></i>Edit Profile
+                                    </a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+    {% block auth_content %}{% endblock %}
+    {% endif %}
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.toggle('show');
+            backdrop.classList.toggle('show');
+        });
+
+        document.getElementById('sidebarBackdrop').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.remove('show');
+            backdrop.classList.remove('show');
+        });
+
+        // Close sidebar when clicking on links in mobile view
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', function () {
+                if (window.innerWidth < 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    const backdrop = document.getElementById('sidebarBackdrop');
+                    sidebar.classList.remove('show');
+                    backdrop.classList.remove('show');
+                }
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block auth_content %}
+<div class="min-vh-100 d-flex align-items-center"
+    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center text-white">
+                <h1 class="display-4 mb-4">
+                    <i class="fas fa-tasks me-3"></i>PMS
+                </h1>
+                <p class="lead mb-5">Permission Management System for BTech Colleges</p>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a href="{{ url_for('login') }}" class="btn btn-light btn-lg px-4 gap-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    <a href="{{ url_for('student_signup') }}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-user-plus me-2"></i>Student Signup
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

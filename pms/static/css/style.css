@@ -1,0 +1,61 @@
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.775rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .h2, h2 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card .h5 {
+        font-size: 1.1rem;
+    }
+    
+    /* Improve form elements on mobile */
+    .form-control, .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Better mobile table display */
+    .table td, .table th {
+        padding: 0.5rem;
+    }
+    
+    /* Stack cards on mobile */
+    .row .col-md-6 {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Sidebar mobile improvements */
+.sidebar {
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* Better touch targets for mobile */
+.btn, .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+/* Improve dropdowns on mobile */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile navbar improvements */
+.navbar-brand {
+    font-size: 1.1rem;
+}

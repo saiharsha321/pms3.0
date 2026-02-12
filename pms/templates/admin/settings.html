@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}System Settings - PMS{% endblock %}
+{% block page_title %}System Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Email Configuration (SMTP)</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Mail Server</label>
+                            <input type="text" class="form-control" name="mail_server"
+                                value="{{ settings.get('MAIL_SERVER', 'smtp.gmail.com') }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Port</label>
+                            <input type="number" class="form-control" name="mail_port"
+                                value="{{ settings.get('MAIL_PORT', '587') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mail Username (Email)</label>
+                        <input type="email" class="form-control" name="mail_username"
+                            value="{{ settings.get('MAIL_USERNAME', '') }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mail Password (App Password)</label>
+                        <input type="text" class="form-control" name="mail_password"
+                            value="{{ settings.get('MAIL_PASSWORD', '') }}" required>
+                        <div class="form-text">For Gmail, use an <a href="https://myaccount.google.com/apppasswords"
+                                target="_blank">App Password</a> if 2FA is enabled.</div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="tls" name="mail_use_tls" {% if
+                            settings.get('MAIL_USE_TLS')=='True' %}checked{% endif %}>
+                        <label class="form-check-label" for="tls">Use TLS</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">How to Configure</h6>
+            </div>
+            <div class="card-body">
+                <h6 class="font-weight-bold">Gmail</h6>
+                <p>
+                    <strong>Server:</strong> smtp.gmail.com<br>
+                    <strong>Port:</strong> 587<br>
+                    <strong>TLS:</strong> Checked
+                </p>
+                <div class="alert alert-warning">
+                    <small><i class="fas fa-exclamation-triangle"></i> You must use an <strong>App Password</strong> if
+                        you have 2-Step Verification enabled on your Google Account.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

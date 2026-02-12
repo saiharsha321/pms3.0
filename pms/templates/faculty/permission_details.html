@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Permission Details - PMS{% endblock %}
+{% block page_title %}Permission Details{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Permission Request Details</h6>
+                <div>
+                    {% if current_user.is_hod() and permission.status == 'pending' %}
+                    <a href="{{ url_for('update_permission_status', permission_id=permission.id, action='approve') }}" 
+                       class="btn btn-success btn-sm">
+                        <i class="fas fa-check me-1"></i>Approve
+                    </a>
+                    <a href="{{ url_for('update_permission_status', permission_id=permission.id, action='reject') }}" 
+                       class="btn btn-danger btn-sm">
+                        <i class="fas fa-times me-1"></i>Reject
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-secondary btn-sm">Back</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Student Name:</strong> {{ permission.student.get_full_name() }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Roll Number:</strong> {{ permission.student.roll_no }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Section:</strong> {{ permission.student.section }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Department:</strong> {{ permission.student.department }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Permission Date:</strong> {{ permission.date.strftime('%Y-%m-%d') }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Applied On:</strong> {{ permission.applied_at.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Club:</strong> {{ permission.club.name }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Event:</strong> {{ permission.event.name if permission.event else permission.custom_event }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Description:</strong>
+                    <p class="mt-2 p-3 bg-light rounded">{{ permission.description }}</p>
+                </div>
+                
+                {% if permission.proof_filename %}
+                <div class="mb-3">
+                    <strong>Proof Document:</strong>
+                    <div class="mt-2">
+                        <a href="{{ url_for('uploaded_file', filename=permission.proof_filename) }}" 
+                           class="btn btn-outline-primary btn-sm" target="_blank">
+                            <i class="fas fa-download me-1"></i>Download Proof
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <strong>Status:</strong>
+                    <span class="badge 
+                        {% if permission.status == 'approved' %}bg-success
+                        {% elif permission.status == 'rejected' %}bg-danger
+                        {% else %}bg-warning{% endif %} ms-2">
+                        {{ permission.status|upper }}
+                    </span>
+                </div>
+                
+                {% if permission.approved_by %}
+                <div class="mb-3">
+                    <strong>Approved/Rejected By:</strong> 
+                    {{ permission.approver.get_full_name() if permission.approver else 'System' }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile - PMS{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Edit Your Profile</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" class="form-control" name="first_name" value="{{ current_user.first_name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" name="last_name" value="{{ current_user.last_name }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" name="email" value="{{ current_user.email }}" required>
+                    </div>
+
+                    {% if current_user.role == 'student' %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Roll Number</label>
+                            <input type="text" class="form-control" value="{{ current_user.roll_no }}" readonly>
+                            <div class="form-text">Roll number cannot be changed</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Section</label>
+                            <input type="text" class="form-control" value="{{ current_user.section }}" readonly>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Department</label>
+                            {% if current_user.role == 'admin' %}
+                                <input type="text" class="form-control" name="department" value="{{ current_user.department or '' }}">
+                            {% else %}
+                                <input type="text" class="form-control" value="{{ current_user.department }}" readonly>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" name="phone" value="{{ current_user.phone or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Change Password</label>
+                        <input type="password" class="form-control" name="new_password" placeholder="Leave blank to keep current password">
+                        <div class="form-text">Enter new password only if you want to change it</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" name="confirm_password" placeholder="Confirm new password">
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

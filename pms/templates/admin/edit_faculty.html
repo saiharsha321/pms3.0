@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Edit Faculty - PMS{% endblock %}
+{% block page_title %}Edit Faculty{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Edit Faculty Profile</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="first_name" value="{{ faculty.first_name }}"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" value="{{ faculty.last_name }}"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" value="{{ faculty.email }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="phone" value="{{ faculty.phone }}">
+                    </div>
+
+                    <hr>
+
+                    <h6 class="font-weight-bold text-info mb-3">Class Incharge Assignment</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Department</label>
+                            <select class="form-select" name="incharge_department">
+                                <option value="">-- None --</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.name }}" {% if faculty.incharge_department==dept.name
+                                    %}selected{% endif %}>{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Section</label>
+                            <select class="form-select" name="incharge_section">
+                                <option value="">-- None --</option>
+                                <option value="A" {% if faculty.incharge_section=='A' %}selected{% endif %}>A</option>
+                                <option value="B" {% if faculty.incharge_section=='B' %}selected{% endif %}>B</option>
+                                <option value="C" {% if faculty.incharge_section=='C' %}selected{% endif %}>C</option>
+                                <option value="D" {% if faculty.incharge_section=='D' %}selected{% endif %}>D</option>
+                            </select>
+                        </div>
+                        <div class="form-text mt-2">Assign this faculty as Incharge for a specific class. They will
+                            approve permissions for this class.</div>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="font-weight-bold text-danger mb-3">Security & Access</h6>
+
+                    <div class="mb-3">
+                        <label class="form-label">Reset Password</label>
+                        <input type="text" class="form-control" name="password"
+                            placeholder="Leave blank to keep current password">
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_blocked" name="is_blocked" {% if
+                            faculty.is_blocked %}checked{% endif %}>
+                        <label class="form-check-label text-danger" for="is_blocked">Block Account (User cannot
+                            login)</label>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('manage_faculty') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

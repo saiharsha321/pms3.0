@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}All Permissions - PMS{% endblock %}
+{% block page_title %}All Permissions{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">All Permission Requests</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Roll No</th>
+                        <th>Date</th>
+                        <th>Club</th>
+                        <th>Event</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for permission in permissions %}
+                    <tr>
+                        <td>{{ permission.student.get_full_name() }}</td>
+                        <td>{{ permission.student.roll_no }}</td>
+                        <td>{{ permission.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ permission.club.name }}</td>
+                        <td>{{ permission.event.name if permission.event else permission.custom_event }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if permission.status == 'approved' %}bg-success
+                                {% elif permission.status == 'rejected' %}bg-danger
+                                {% else %}bg-warning{% endif %}">
+                                {{ permission.status|upper }}
+                            </span>
+                        </td>
+                        <td>{{ permission.applied_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if permission.status == 'pending' %}
+                            <a href="{{ url_for('admin_update_permission', permission_id=permission.id, action='approve') }}" 
+                               class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i>
+                            </a>
+                            <a href="{{ url_for('admin_update_permission', permission_id=permission.id, action='reject') }}" 
+                               class="btn btn-danger btn-sm">
+                                <i class="fas fa-times"></i>
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('admin_view_permission', permission_id=permission.id) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
